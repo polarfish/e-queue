@@ -51,7 +51,7 @@ app.post('/admin/create_queue/:queueName', function (req, res) {
                 startDate: new Date(0),
                 userId: user.id,
                 ticketsGiven: 0,
-                currentTicketNumber: 0,
+                currentTicketNumber: 1,
                 isActive: false
             })).save(function (err, queue) {
                     if (err) {
@@ -111,7 +111,7 @@ app.put('/admin/deactivate_queue/:queueName', function (req, res) {
     User.findOne({"name": username}, function (err, user) {
         if (user && (user.password == password)) {
             console.log("Authorized!");
-            Queue.update({name: req.params.queueName}, {$set: {isActive: false, startDate:new Date(0), ticketsGiven: 0}}, function(err, num, raw) {
+            Queue.update({name: req.params.queueName}, {$set: {isActive: false, startDate:new Date(0), ticketsGiven: 0, currentTicketNumber: 1}}, function(err, num, raw) {
                 if (err) {
                     console.log(err);
                     res.send(err, 500);
@@ -133,6 +133,63 @@ app.put('/admin/deactivate_queue/:queueName', function (req, res) {
                     }
                 }
             });
+        } else {
+            res.send(401);
+        }
+    });
+});
+
+app.get('/admin/process_queue/:queueName', function (req, res) {
+    var header = req.headers['authorization'] || '',
+        token = header.split(/\s+/).pop() || '',
+        auth = new Buffer(token, 'base64').toString(),
+        parts = auth.split(/:/),
+        username = parts[0],
+        password = parts[1];
+
+    console.log("Authentication: username : '" + username + "', password : '" + password + "'");
+
+    User.findOne({"name": username}, function (err, user) {
+        if (user && (user.password == password)) {
+            console.log("Authorized!");
+            Queue.findOne({name: req.params.queueName}, function (err, queue) {
+                if (err) {
+                    console.log(err);
+                    res.send(err, 500);
+                } else {
+                    if (queue) {
+                        if (queue.currentTicketNumber > queue.ticketsGiven) {
+                            res.send("No tickets to process", 200);
+                        } else {
+                            Ticket.findOne({number: queue.currentTicketNumber}, function(err, ticket) {
+                                if (err) {
+                                    console.log(err);
+                                    res.send(err, 500);
+                                } else {
+                                    if (ticket) {
+                                        ticket.isProcessed = true;
+                                        ticket.save(function(err, ticket) {
+                                            queue.currentTicketNumber++;
+                                            queue.save(function(err, queue) {
+                                                if (err) {
+                                                    console.log(err);
+                                                    res.send(err, 500);
+                                                } else {
+                                                    res.send(ticket, 200);
+                                                }
+                                            });
+                                        });
+                                    } else {
+                                        res.send("Ticket not found", 404);
+                                    }
+                                }
+                            });
+                        }
+                    } else {
+                        res.send("Queue not found", 500);
+                    }
+                }
+            })
         } else {
             res.send(401);
         }
@@ -184,7 +241,7 @@ app.get('/user/:userName/:queueName/get_ticket', function (req, res) {
                     res.send(err, 500);
                 } else {
                     if (queue) {
-                        if (queue.isActive == "true") {
+                        if (queue.isActive) {
                             (new Ticket({
                                 queueId: queue.id,
                                 number: queue.ticketsGiven + 1,
