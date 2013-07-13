@@ -48,18 +48,24 @@ queueDB.on('error', console.error.bind(console, 'connection error:'));
 //Check if successful connection is made
 queueDB.once('open', function callback () {
     console.log("Connection success.");
+
+
+    /* DATABASE SCHEMAS */
     var userSchema = mongoose.Schema({
             name: String,
             password: String
         }),
-        User = mongoose.model('User', userSchema),
-        initUsers = [
-            {
-                name: 'donetsk_post',
-                password: 'donetsk_post'
-            }
-        ];
+        queueSchema = mongoose.Schema({
+            name: String,
+            startDate: String,
+            userId: String
+        }),
+    /* END DATABASE SCHEMAS */
 
+    /* DATABASE MODELS */
+        User = mongoose.model('User', userSchema),
+        Queue = mongoose.model('Queue', queueSchema);
+    /* END DATABASE MODELS */
         console.log('Initializing DB:')
         User.remove({}, function (err) {
             if (err) {
@@ -67,14 +73,25 @@ queueDB.once('open', function callback () {
                 return;
             }
             console.log('Database has been dropped...');
-            for (var i in initUsers) {
-                (new User(initUsers[i])).save(function (error, doc) {
-                    if (error) {
-                        console.log(error);
-                    }
-                    console.log('Add test user ' + doc.name + ' with password ' + doc.password);
-                });
-            }
+            (new User({
+                name: 'donetsk_post',
+                password: 'donetsk_post'
+            })).save(function (error, doc) {
+                if (error) {
+                    console.log(error);
+                }
+                console.log('Add test user ' + doc.name + ' with password ' + doc.password);
+            });
+            (new Queue({
+                name: 'test',
+                startDate: '10-10-10',
+                userId: '123123'
+            })).save(function (err, doc) {
+                if (err) {
+                    console.log(err);
+                }
+                console.log('Add test queue ' + doc.name);
+            })
         });
 });
 
