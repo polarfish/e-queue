@@ -43,19 +43,39 @@ queueDB.on('error', console.error.bind(console, 'connection error:'));
 queueDB.once('open', function callback () {
     console.log("MY DB Connected with Mongoose");
     var userSchema = mongoose.Schema({
-            name: String
+            name: String,
+            password: String
         }),
         User = mongoose.model('User', userSchema),
-        admin = new User({ name: 'administrator' });
-
-        admin.save(function (error, user) {
-            if (error) {
-                console.log(error);
+        initUsers = [
+            {
+                name: 'Ted',
+                password: 'TedsPassword'
+            },
+            {
+                name: 'Jim',
+                password: 'JimsPassword'
+            },
+            {
+                name: 'Meely',
+                password: 'MeelysPassword'
             }
-            console.log('Succesfully saved. User ' + user);
+        ];
+
+        console.log('Initializing DB:')
+
+        User.remove({}, function (err) {
+            console.log('Database has been dropped...');
         });
 
-    console.log(admin.name);
+        for (var i = 0; i < initUsers.length; i++) {
+            (new User(initUsers[i])).save(function (error, doc) {
+                if (error) {
+                    console.log(error);
+                }
+                console.log('Add test user ' + doc.name + ' with password ' + doc.password);
+            });
+        }
 });
 
 //create an employee schema for operation with mongo
