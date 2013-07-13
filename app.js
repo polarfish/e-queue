@@ -27,11 +27,45 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
+// Authentication
+var getUser = function (req) {
+    var header = req.headers['authorization'] || '',        // get the header
+        token = header.split(/\s+/).pop() || '',            // and the encoded auth token
+        auth = new Buffer(token, 'base64').toString(),    // convert from base64
+        parts = auth.split(/:/),                          // split on colon
+        username = parts[0],
+        password = parts[1];
+
+    console.log("Authentication: username : '" + username + "', password : '" + password + "'");
+
+    User.findOne({"name":username}, function(err, user) {
+
+    });
+
+    return undefined;
+}
+
 // Routes
 app.get('/', routes.index);
 app.post('/admin/create_queue/:queueName', function (req, res) {
-    res.send(req.params.queueName);
+
+    var user = getUser(req);
+
+
+//    (new Queue({
+//        name: req.params.queueName,
+//        startDate: '',
+//        userId: ''
+//    })).save(function (err, doc) {
+//            if (err) {
+//                console.log(err);
+//            }
+//            console.log('Queue added: {"name": ' + req.params.queueName + ', "user":} ' + doc.name);
+//        })
+
+    res.send(JSON.stringify(user));
 });
+
 app.get('/admin/:userId/queues', function (req, res) {
     Queue.find({userId: req.params['userId']}, function (err, queues) {
         res.send(queues);
