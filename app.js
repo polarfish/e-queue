@@ -63,7 +63,7 @@ app.post('/admin/create_queue/:queueName', function (req, res) {
                     }
                 })
         } else {
-            res.send(403);
+            res.send(401);
         }
     });
 });
@@ -93,7 +93,7 @@ app.put('/admin/activate_queue/:queueName', function (req, res) {
                 }
             });
         } else {
-            res.send(403);
+            res.send(401);
         }
     });
 });
@@ -134,7 +134,7 @@ app.put('/admin/deactivate_queue/:queueName', function (req, res) {
                 }
             });
         } else {
-            res.send(403);
+            res.send(401);
         }
     });
 });
@@ -184,27 +184,31 @@ app.get('/user/:userName/:queueName/get_ticket', function (req, res) {
                     res.send(err, 500);
                 } else {
                     if (queue) {
-                        (new Ticket({
-                            queueId: queue.id,
-                            number: queue.ticketsGiven + 1,
-                            hash: Math.random(),
-                            isProcessed: false
-                        })).save(function (err, ticket) {
-                                if (err) {
-                                    console.log(err);
-                                    res.send(err, 500);
-                                } else {
-                                    queue.ticketsGiven++;
-                                    queue.save(function(err, queue) {
-                                        if (err) {
-                                            console.log(err);
-                                            res.send(err, 500);
-                                        } else {
-                                            res.send(ticket, 200);
-                                        }
-                                    });
-                                }
-                            })
+                        if (queue.isActive == "true") {
+                            (new Ticket({
+                                queueId: queue.id,
+                                number: queue.ticketsGiven + 1,
+                                hash: Math.random(),
+                                isProcessed: false
+                            })).save(function (err, ticket) {
+                                    if (err) {
+                                        console.log(err);
+                                        res.send(err, 500);
+                                    } else {
+                                        queue.ticketsGiven++;
+                                        queue.save(function(err, queue) {
+                                            if (err) {
+                                                console.log(err);
+                                                res.send(err, 500);
+                                            } else {
+                                                res.send(ticket, 200);
+                                            }
+                                        });
+                                    }
+                                })
+                        } else {
+                            res.send("Inactive queue " + req.params.queueName, 403);
+                        }
                     } else {
                         res.send("Undefined queue " + req.params.queueName, 404);
                     }
