@@ -49,6 +49,10 @@ queueDB.once('open', function callback () {
         User = mongoose.model('User', userSchema),
         initUsers = [
             {
+                name: 'donetsk_post',
+                password: 'donetsk_post'
+            },
+            {
                 name: 'Ted',
                 password: 'TedsPassword'
             },
