@@ -5,8 +5,8 @@
 
 var express = require('express')
   , routes = require('./routes')
-  , manage_queues = require('./routes/manage_queues')
-  , use_queues = require('./routes/use_queues');
+  , manageQueues = require('./routes/manage_queues')
+  , useQueues = require('./routes/use_queues');
 
 var app = module.exports = express.createServer();
 
@@ -31,7 +31,7 @@ app.configure('production', function(){
 
 // Routes
 app.get('/', routes.index);
-app.post('/admin/:user/create_queue', manage_queues.create_queue)
+app.post('/admin/create_queue/:queue_name', manageQueues.createQueue)
 
 //Connect to mongo DB
 var mongoose = require("mongoose")
