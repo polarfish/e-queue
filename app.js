@@ -29,8 +29,8 @@ app.configure('production', function(){
 
 // Routes
 app.get('/', routes.index);
-app.post('/admin/:user/create_queue', function (req, res) {
-    res.send('/admin/:user/create_queue');
+app.post('/admin/create_queue/:queueName', function (req, res) {
+    res.send(req.params.queueName);
 });
 app.get('/admin/:userId/queues', function (req, res) {
     res.send('/admin/:userId/queues');
