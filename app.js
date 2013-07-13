@@ -33,12 +33,31 @@ app.post('/admin/create_queue/:queueName', function (req, res) {
     res.send(req.params.queueName);
 });
 app.get('/admin/:userId/queues', function (req, res) {
-    res.send('/admin/:userId/queues');
+    User.find({userId: '123123'}, function (err, queues) {
+        res.send(queues);
+    })
 });
 
 //Connect to mongo DB
 var mongoose = require("mongoose"),
     queueDB;
+
+/* DATABASE SCHEMAS */
+var userSchema = mongoose.Schema({
+        name: String,
+        password: String
+    }),
+    queueSchema = mongoose.Schema({
+        name: String,
+        startDate: String,
+        userId: String
+    }),
+/* END DATABASE SCHEMAS */
+
+/* DATABASE MODELS */
+    User = mongoose.model('User', userSchema),
+    Queue = mongoose.model('Queue', queueSchema);
+/* END DATABASE MODELS */
 
 mongoose.connect('mongodb://localhost/queue');
 queueDB = mongoose.connection;
@@ -50,22 +69,7 @@ queueDB.once('open', function callback () {
     console.log("Connection success.");
 
 
-    /* DATABASE SCHEMAS */
-    var userSchema = mongoose.Schema({
-            name: String,
-            password: String
-        }),
-        queueSchema = mongoose.Schema({
-            name: String,
-            startDate: String,
-            userId: String
-        }),
-    /* END DATABASE SCHEMAS */
 
-    /* DATABASE MODELS */
-        User = mongoose.model('User', userSchema),
-        Queue = mongoose.model('Queue', queueSchema);
-    /* END DATABASE MODELS */
         console.log('Initializing DB:')
         User.remove({}, function (err) {
             if (err) {
