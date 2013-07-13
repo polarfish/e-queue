@@ -4,9 +4,7 @@
  */
 
 var express = require('express')
-  , routes = require('./routes')
-  , manageQueues = require('./routes/manage_queues')
-  , useQueues = require('./routes/use_queues');
+  , routes = require('./routes');
 
 var app = module.exports = express.createServer();
 
@@ -31,12 +29,16 @@ app.configure('production', function(){
 
 // Routes
 app.get('/', routes.index);
-app.post('/admin/:user/create_queue', manageQueues.createQueue);
-app.get('/admin/:userId/queues', manageQueues.getQueueList);
+app.post('/admin/:user/create_queue', function (req, res) {
+    res.send('/admin/:user/create_queue');
+});
+app.get('/admin/:userId/queues', function (req, res) {
+    res.send('/admin/:userId/queues');
+});
 
 //Connect to mongo DB
-var mongoose = require("mongoose")
-    , queueDB;
+var mongoose = require("mongoose"),
+    queueDB;
 
 mongoose.connect('mongodb://localhost/queue');
 queueDB = mongoose.connection;
