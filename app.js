@@ -31,26 +31,26 @@ app.configure('production', function(){
 
 // Routes
 app.get('/', routes.index);
-app.post('/admin/:user/create_queue', manageQueues.createQueue);
+app.post('/admin/create_queue/:queueName', manageQueues.createQueue);
 app.get('/admin/:userId/queues', manageQueues.getQueueList);
 
 //Connect to mongo DB
-var mongoose = require("mongoose")
+var Mongoose = require("mongoose")
     , queueDB;
 
-mongoose.connect('mongodb://localhost/queue');
-queueDB = mongoose.connection;
+Mongoose.connect('mongodb://localhost/queue');
+queueDB = Mongoose.connection;
 
 //Error handling if conncetion fails
 queueDB.on('error', console.error.bind(console, 'connection error:'));
 //Check if successful connection is made
 queueDB.once('open', function callback () {
     console.log("Connection success.");
-    var userSchema = mongoose.Schema({
+    var userSchema = Mongoose.Schema({
             name: String,
             password: String
         }),
-        User = mongoose.model('User', userSchema),
+        User = Mongoose.model('User', userSchema),
         initUsers = [
             {
                 name: 'donetsk_post',
