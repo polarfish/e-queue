@@ -31,10 +31,6 @@ app.configure('production', function(){
 
 app.get('/', routes.index);
 
-app.get('/users', function (req, res) {
-    res.send('User list...');
-});
-
 var mongoose= require("mongoose"),
     queueDB;
 //Connect to mongo DB
@@ -71,19 +67,21 @@ queueDB.once('open', function callback () {
         ];
 
         console.log('Initializing DB:')
-
         User.remove({}, function (err) {
+            if (err) {
+                console.log(err);
+                return;
+            }
             console.log('Database has been dropped...');
+            for (var i in initUsers) {
+                (new User(initUsers[i])).save(function (error, doc) {
+                    if (error) {
+                        console.log(error);
+                    }
+                    console.log('Add test user ' + doc.name + ' with password ' + doc.password);
+                });
+            }
         });
-
-        for (var i in initUsers) {
-            (new User(initUsers[i])).save(function (error, doc) {
-                if (error) {
-                    console.log(error);
-                }
-                console.log('Add test user ' + doc.name + ' with password ' + doc.password);
-            });
-        }
 });
 
 app.listen(3000, function(){
