@@ -31,6 +31,37 @@ app.configure('production', function(){
 
 app.get('/', routes.index);
 
+var mongoose= require("mongoose"),
+    queueDB;
+//Connect to mongo DB
+mongoose.connect('mongodb://localhost/queue');
+queueDB = mongoose.connection;
+
+//Error handling if conncetion fails
+queueDB.on('error', console.error.bind(console, 'connection error:'));
+//Check if successful connection is made
+queueDB.once('open', function callback () {
+    console.log("MY DB Connected with Mongoose");
+    var userSchema = mongoose.Schema({
+            name: String
+        }),
+        User = mongoose.model('User', userSchema),
+        admin = new User({ name: 'administrator' });
+
+        admin.save(function (error, user) {
+            if (error) {
+                console.log(error);
+            }
+            console.log('Succesfully saved. User ' + user);
+        });
+
+    console.log(admin.name);
+});
+
+//create an employee schema for operation with mongo
+
+
+
 app.listen(3000, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });
