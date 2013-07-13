@@ -33,7 +33,7 @@ app.post('/admin/create_queue/:queueName', function (req, res) {
     res.send(req.params.queueName);
 });
 app.get('/admin/:userId/queues', function (req, res) {
-    User.find({userId: '123123'}, function (err, queues) {
+    Queue.find({userId: req.params['userId']}, function (err, queues) {
         res.send(queues);
     })
 });
