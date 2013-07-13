@@ -30,12 +30,13 @@ app.configure('production', function(){
 });
 
 // Routes
-
 app.get('/', routes.index);
+app.post('/admin/:user/create_queue', manage_queues.create_queue)
 
-var mongoose= require("mongoose"),
-    queueDB;
 //Connect to mongo DB
+var mongoose = require("mongoose")
+    , queueDB;
+
 mongoose.connect('mongodb://localhost/queue');
 queueDB = mongoose.connection;
 
