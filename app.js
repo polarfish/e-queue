@@ -68,7 +68,7 @@ queueDB.once('open', function callback () {
             console.log('Database has been dropped...');
         });
 
-        for (var i = 0; i < initUsers.length; i++) {
+        for (var i in initUsers) {
             (new User(initUsers[i])).save(function (error, doc) {
                 if (error) {
                     console.log(error);
@@ -77,10 +77,6 @@ queueDB.once('open', function callback () {
             });
         }
 });
-
-//create an employee schema for operation with mongo
-
-
 
 app.listen(3000, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
