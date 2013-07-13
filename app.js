@@ -31,6 +31,10 @@ app.configure('production', function(){
 
 app.get('/', routes.index);
 
+app.get('/users', function (req, res) {
+    res.send('User list...');
+});
+
 var mongoose= require("mongoose"),
     queueDB;
 //Connect to mongo DB
@@ -41,7 +45,7 @@ queueDB = mongoose.connection;
 queueDB.on('error', console.error.bind(console, 'connection error:'));
 //Check if successful connection is made
 queueDB.once('open', function callback () {
-    console.log("MY DB Connected with Mongoose");
+    console.log("Connection success.");
     var userSchema = mongoose.Schema({
             name: String,
             password: String
