@@ -37,6 +37,21 @@ app.get('/admin/:userId/queues', function (req, res) {
         res.send(queues);
     })
 });
+app.get('/admin/:queueId/ticket', function (req, res) {
+    Queue.findById(req.params['queueId'], function (err, doc) {
+        (new Ticket({
+            queueId: doc.id,
+            number: doc.ticketsGiver + 1,
+            hash: 'asdfasdfasdfa',
+            active: true
+        })).save(function (err, doc) {
+            res.send(doc);
+        })
+    })
+
+});
+
+
 
 //Connect to mongo DB
 var mongoose = require("mongoose"),
@@ -50,13 +65,22 @@ var userSchema = mongoose.Schema({
     queueSchema = mongoose.Schema({
         name: String,
         startDate: String,
-        userId: String
+        userId: String,
+        ticketsGiver: Number
     }),
+    ticketSchema = mongoose.Schema({
+        queueId: String,
+        number: String,
+        hash: String,
+        active: Boolean
+    })
 /* END DATABASE SCHEMAS */
 
 /* DATABASE MODELS */
     User = mongoose.model('User', userSchema),
-    Queue = mongoose.model('Queue', queueSchema);
+    Queue = mongoose.model('Queue', queueSchema),
+    Ticket = mongoose.model('Ticket', ticketSchema);
+
 /* END DATABASE MODELS */
 
 mongoose.connect('mongodb://localhost/queue');
