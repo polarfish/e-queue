@@ -4,7 +4,9 @@
  */
 
 var express = require('express')
-  , routes = require('./routes');
+  , routes = require('./routes')
+  , manage_queues = require('./routes/manage_queues')
+  , use_queues = require('./routes/use_queues');
 
 var app = module.exports = express.createServer();
 
@@ -51,18 +53,6 @@ queueDB.once('open', function callback () {
             {
                 name: 'donetsk_post',
                 password: 'donetsk_post'
-            },
-            {
-                name: 'Ted',
-                password: 'TedsPassword'
-            },
-            {
-                name: 'Jim',
-                password: 'JimsPassword'
-            },
-            {
-                name: 'Meely',
-                password: 'MeelysPassword'
             }
         ];
 
