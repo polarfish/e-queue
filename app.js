@@ -31,7 +31,7 @@ app.configure('production', function(){
 
 // Routes
 app.get('/', routes.index);
-app.post('/admin/:user/create_queue', manageQueues.createQueue)
+app.post('/admin/create_queue/:queueName', manageQueues.createQueue)
 
 //Connect to mongo DB
 var mongoose = require("mongoose")
