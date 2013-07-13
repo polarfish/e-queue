@@ -43,12 +43,20 @@ app.get('/admin/:queueId/ticket', function (req, res) {
             queueId: doc.id,
             number: doc.ticketsGiver + 1,
             hash: 'asdfasdfasdfa',
-            active: true
+            isActive: true
         })).save(function (err, doc) {
             res.send(doc);
         })
     })
-
+});
+app.post('/admin/:number/ticket', function (req, res) {
+    Ticket.update({number: req.params['number']}, {isActive: false}, function (err, affected, raw) {
+        if (err) {
+            res.send("Error: " + err);
+            return;
+        }
+        res.send(raw);
+    });
 });
 
 
@@ -66,13 +74,15 @@ var userSchema = mongoose.Schema({
         name: String,
         startDate: String,
         userId: String,
-        ticketsGiver: Number
+        ticketsGiver: Number,
+        currentTicketNumber: Number,
+        isActive: Boolean
     }),
     ticketSchema = mongoose.Schema({
         queueId: String,
         number: String,
         hash: String,
-        active: Boolean
+        isActive: Boolean
     })
 /* END DATABASE SCHEMAS */
 
@@ -113,7 +123,10 @@ queueDB.once('open', function callback () {
             (new Queue({
                 name: 'test',
                 startDate: '10-10-10',
-                userId: '123123'
+                userId: '123123',
+                ticketsGiver: 1,
+                isActive: true,
+                currentTicketNumber: 1
             })).save(function (err, doc) {
                 if (err) {
                     console.log(err);
