@@ -48,11 +48,11 @@ app.post('/admin/create_queue/:queueName', function (req, res) {
             console.log("Authorized!");
             (new Queue({
                 name: req.params.queueName,
-                startDate: new Date(0),
+                startDate: new Date(),
                 userId: user.id,
                 ticketsGiven: 0,
                 currentTicketNumber: 1,
-                isActive: false
+                isActive: true
             })).save(function (err, queue) {
                     if (err) {
                         console.log(err);
