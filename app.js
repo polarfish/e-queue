@@ -196,19 +196,28 @@ app.get('/admin/process_queue/:queueName', function (req, res) {
     });
 });
 
-app.get('/admin/:userName/queues', function (req, res) {
-    User.findOne({name: req.params['userName']}, function (err, doc) {
-        if (err) {
-            res.send(err, 500);
-            return;
-        }
-        console.log("User id " + doc.id);
-        Queue.find({userId: doc.id}, function (err, queues) {
+app.get('/admin/:userMark/queues', function (req, res) {
+    if (req.params.userMark.length == 25) {
+        Queue.find({userId: req.params['userMark']}, function (err, queues) {
             res.send(queues);
-        })
-
-    });
-
+        });
+    } else {
+        User.findOne({name: req.params['userMark']}, function(err, user) {
+            if (err) {
+                console.log(err);
+                res.send(err, 500);
+            } else {
+                if (user) {
+                    Queue.find({userId: user.id}, function (err, queues) {
+                        console.log(user);
+                        res.send(queues);
+                    });
+                } else {
+                    res.send("User not found", 404);
+                }
+            }
+        });
+    }
 });
 
 app.post('/admin/:number/ticket', function (req, res) {
@@ -352,6 +361,7 @@ queueDB.on('error', console.error.bind(console, 'connection error:'));
 queueDB.once('open', function callback() {
     console.log("Connection success.");
     console.log('Initializing DB:')
+    Ticket.remove({}, function (err) {});
     Queue.remove({}, function (err) {});
     User.remove({}, function (err) {
         if (err) {
