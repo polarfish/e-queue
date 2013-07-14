@@ -196,10 +196,19 @@ app.get('/admin/process_queue/:queueName', function (req, res) {
     });
 });
 
-app.get('/admin/:userId/queues', function (req, res) {
-    Queue.find({userId: req.params['userId']}, function (err, queues) {
-        res.send(queues);
-    })
+app.get('/admin/:userName/queues', function (req, res) {
+    User.findOne({name: req.params['userName']}, function (err, doc) {
+        if (err) {
+            res.send(err, 500);
+            return;
+        }
+        console.log("User id " + doc.id);
+        Queue.find({userId: doc.id}, function (err, queues) {
+            res.send(queues);
+        })
+
+    });
+
 });
 
 app.post('/admin/:number/ticket', function (req, res) {
@@ -277,6 +286,17 @@ app.get('/user/:userName/:queueName/get_ticket', function (req, res) {
     });
 });
 
+app.get('/admin/users', function (req, res) {
+    User.find({}, function (err, users) {
+        if (err) {
+            res.send(err, 500);
+            return;
+        }
+        res.send(users);
+    })
+
+});
+
 
 
 
@@ -332,6 +352,7 @@ queueDB.on('error', console.error.bind(console, 'connection error:'));
 queueDB.once('open', function callback() {
     console.log("Connection success.");
     console.log('Initializing DB:')
+    Queue.remove({}, function (err) {});
     User.remove({}, function (err) {
         if (err) {
             console.log(err);
