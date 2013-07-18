@@ -1,7 +1,7 @@
 {
-  "name": "openshift-sample-app",
-  "version": "1.0.0",
-  "description": "OpenShift Sample Application",
+  "name": "e-queue",
+  "version": "0.0.1",
+  "description": "Electronic queue",
   "keywords": [
     "OpenShift",
     "Node.js",
@@ -25,7 +25,7 @@
   },
 
   "dependencies": {
-      "express": "2.5.8"
+      "express": "3.0.0"
       , "jade": ">= 0.0.1"
       , "mongoose": ">= 1.2.32"
   },
