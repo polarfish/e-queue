@@ -99,29 +99,27 @@ var EQueue = function () {
 
 
     /*  ================================================================  */
-    /*  EQueue server functions (main app logic here).                       */
+    /*  EQueue server functions (main app logic here).                    */
     /*  ================================================================  */
 
     /**
      *  Create the routing table entries + handlers for the application.
      */
     self.createRoutes = function () {
-        self.routes = { };
 
-        // Routes for /health, /asciimo and /
-        self.routes['/health'] = function (req, res) {
+        self.get('/health', function (req, res) {
             res.send('1');
-        };
+        });
 
-        self.routes['/asciimo'] = function (req, res) {
+        self.get('/asciimo', function (req, res) {
             var link = "http://i.imgur.com/kmbjB.png";
             res.send("<html><body><img src='" + link + "'></body></html>");
-        };
+        });
 
-        self.routes['/'] = function (req, res) {
+        self.get('/', function (req, res) {
             res.setHeader('Content-Type', 'text/html');
             res.send(self.cache_get('index.html'));
-        };
+        });
     };
 
 
@@ -130,13 +128,10 @@ var EQueue = function () {
      *  the handlers.
      */
     self.initializeServer = function () {
-        self.createRoutes();
-        self.app = express();
 
-        //  Add handlers for the app (from the routes).
-        for (var r in self.routes) {
-            self.app.get(r, self.routes[r]);
-        }
+        self.app = express();
+        self.createRoutes();
+
     };
 
     self.initializeDatabase = function () {
@@ -219,6 +214,23 @@ var EQueue = function () {
         self.initializeServer();
         // Connect to DB. Create base structure
         self.initializeDatabase();
+
+        self.app.configure(function () {
+            self.app.set('views', __dirname + '/views');
+            self.app.set('view engine', 'jade');
+            self.app.use(express.bodyParser());
+            self.app.use(express.methodOverride());
+            self.app.use(app.router);
+            self.app.use(express.static(__dirname + '/public'));
+        });
+
+        self.app.configure('development', function () {
+            self.app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+        });
+
+        app.configure('production', function () {
+            app.use(express.errorHandler());
+        });
     };
 
 
