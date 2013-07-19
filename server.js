@@ -105,18 +105,18 @@ var EQueue = function () {
     /**
      *  Create the routing table entries + handlers for the application.
      */
-    self.createRoutes = function () {
+    self.createRoutes = function (app) {
 
-        self.get('/health', function (req, res) {
+        app.get('/health', function (req, res) {
             res.send('1');
         });
 
-        self.get('/asciimo', function (req, res) {
+        app.get('/asciimo', function (req, res) {
             var link = "http://i.imgur.com/kmbjB.png";
             res.send("<html><body><img src='" + link + "'></body></html>");
         });
 
-        self.get('/', function (req, res) {
+        app.get('/', function (req, res) {
             res.setHeader('Content-Type', 'text/html');
             res.send(self.cache_get('index.html'));
         });
@@ -129,8 +129,19 @@ var EQueue = function () {
      */
     self.initializeServer = function () {
 
-        self.app = express();
-        self.createRoutes();
+        var app = express();
+        self.createRoutes(app);
+
+        app.configure(function () {
+            app.set('views', __dirname + '/views');
+            app.set('view engine', 'jade');
+            app.use(express.bodyParser());
+            app.use(express.methodOverride());
+            app.use(app.router);
+            app.use(express.static(__dirname + '/public'));
+        });
+
+        self.app = app;
 
     };
 
@@ -215,21 +226,12 @@ var EQueue = function () {
         // Connect to DB. Create base structure
         self.initializeDatabase();
 
-        self.app.configure(function () {
-            self.app.set('views', __dirname + '/views');
-            self.app.set('view engine', 'jade');
-            self.app.use(express.bodyParser());
-            self.app.use(express.methodOverride());
-            self.app.use(app.router);
-            self.app.use(express.static(__dirname + '/public'));
-        });
-
         self.app.configure('development', function () {
             self.app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
         });
 
-        app.configure('production', function () {
-            app.use(express.errorHandler());
+        self.app.configure('production', function () {
+            self.app.use(express.errorHandler());
         });
     };
 
