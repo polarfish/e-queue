@@ -1,22 +1,16 @@
 {
   "name": "e-queue",
-  "version": "0.0.1",
+  "version": "0.1",
   "description": "Electronic queue",
   "keywords": [
-    "OpenShift",
-    "Node.js",
-    "application",
+    "queue",
+    "mobile",
+    "rest",
     "openshift"
   ],
-  "author": {
-    "name": "OpenShift",
-    "email": "ramr@example.org",
-    "url":  "http://www.openshift.com/"
-  },
-  "homepage": "http://www.openshift.com/",
   "repository": {
     "type": "git",
-    "url": "https://gitub.com/openshift/origin-server"
+    "url": "https://gitub.com/polarfish/e-queue"
   },
 
   "engines": {
