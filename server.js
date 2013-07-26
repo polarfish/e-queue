@@ -1,4 +1,4 @@
-#!/bin/env node
+#!/usr/bin/env node
 //  OpenShift sample Node application
 var express = require('express'),
     fs = require('fs'),
@@ -514,8 +514,6 @@ var EQueue = function () {
     };
 
 };
-/*  Sample Application.  */
-
 
 /**
  *  main():  Main code.
@@ -523,4 +521,3 @@ var EQueue = function () {
 var eQueue = new EQueue();
 eQueue.initialize();
 eQueue.start();
-
